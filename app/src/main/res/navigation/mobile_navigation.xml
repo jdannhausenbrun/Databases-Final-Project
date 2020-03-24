@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_insert">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.cs411databases.databasefinalproject.ui.home.HomeFragment"
+        android:id="@+id/navigation_insert"
+        android:name="com.cs411databases.databasefinalproject.ui.insert.InsertFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_insert" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.cs411databases.databasefinalproject.ui.dashboard.DashboardFragment"
+        android:id="@+id/navigation_view"
+        android:name="com.cs411databases.databasefinalproject.ui.view.ViewFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_view" />
 
     <fragment
         android:id="@+id/navigation_notifications"
