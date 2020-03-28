@@ -2,24 +2,31 @@ package com.cs411databases.databasefinalproject.objects;
 
 //Products (ProductID, BrandID, ProductName, ProductType)
 public class Product {
-    private long ProductID;
-    private long BrandID;
+    private String ProductID;
+    private String BrandID;
     private String ProductName;
     private String ProductType;
 
-    public long getProductID() {
+    public Product(String productID, String brandID, String productName, String productType) {
+        ProductID = productID;
+        BrandID = brandID;
+        ProductName = productName;
+        ProductType = productType;
+    }
+
+    public String getProductID() {
         return ProductID;
     }
 
-    public void setProductID(long productID) {
+    public void setProductID(String productID) {
         ProductID = productID;
     }
 
-    public long getBrandID() {
+    public String getBrandID() {
         return BrandID;
     }
 
-    public void setBrandID(long brandID) {
+    public void setBrandID(String brandID) {
         BrandID = brandID;
     }
 
@@ -41,11 +48,9 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "ProductID=" + ProductID +
-                ", BrandID=" + BrandID +
-                ", ProductName='" + ProductName + '\'' +
-                ", ProductType='" + ProductType + '\'' +
-                '}';
+        return "ProductID: " + ProductID +
+                "\nBrandID: " + BrandID +
+                "\nProductName: " + ProductName +
+                "\nProductType: " + ProductType;
     }
 }

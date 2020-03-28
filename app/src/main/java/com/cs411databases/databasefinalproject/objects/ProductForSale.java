@@ -2,60 +2,66 @@ package com.cs411databases.databasefinalproject.objects;
 
 //ProductsForSale (ProductOfferingID, RetailerID, ProductID, Price, DiscountPrice)
 public class ProductForSale {
-    private long ProductOfferingID;
-    private long RetailerID;
-    private long ProductID;
-    private float Price;
-    private float DiscountPrice;
+    private String ProductOfferingID;
+    private String RetailerID;
+    private String ProductID;
+    private Double Price;
+    private Double DiscountPrice;
 
-    public long getProductOfferingID() {
+    public ProductForSale(String productOfferingID, String retailerID, String productID, Double price, Double discountPrice) {
+        ProductOfferingID = productOfferingID;
+        RetailerID = retailerID;
+        ProductID = productID;
+        Price = price;
+        DiscountPrice = discountPrice;
+    }
+
+    public String getProductOfferingID() {
         return ProductOfferingID;
     }
 
-    public void setProductOfferingID(long productOfferingID) {
+    public void setProductOfferingID(String productOfferingID) {
         ProductOfferingID = productOfferingID;
     }
 
-    public long getRetailerID() {
+    public String getRetailerID() {
         return RetailerID;
     }
 
-    public void setRetailerID(long retailerID) {
+    public void setRetailerID(String retailerID) {
         RetailerID = retailerID;
     }
 
-    public long getProductID() {
+    public String getProductID() {
         return ProductID;
     }
 
-    public void setProductID(long productID) {
+    public void setProductID(String productID) {
         ProductID = productID;
     }
 
-    public float getPrice() {
+    public Double getPrice() {
         return Price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(Double price) {
         Price = price;
     }
 
-    public float getDiscountPrice() {
+    public Double getDiscountPrice() {
         return DiscountPrice;
     }
 
-    public void setDiscountPrice(float discountPrice) {
+    public void setDiscountPrice(Double discountPrice) {
         DiscountPrice = discountPrice;
     }
 
     @Override
     public String toString() {
-        return "ProductForSale{" +
-                "ProductOfferingID=" + ProductOfferingID +
-                ", RetailerID=" + RetailerID +
-                ", ProductID=" + ProductID +
-                ", Price=" + Price +
-                ", DiscountPrice=" + DiscountPrice +
-                '}';
+        return "ProductOfferingID: " + ProductOfferingID +
+                "\nRetailerID: " + RetailerID +
+                "\nProductID: " + ProductID +
+                "\nPrice: " + Price +
+                "\nDiscountPrice: " + DiscountPrice;
     }
 }

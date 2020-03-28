@@ -2,15 +2,21 @@ package com.cs411databases.databasefinalproject.objects;
 
 //Retailers (RetailerID, RetailerName, RetailerCategory)
 public class Retailer {
-    private long RetailerID;
+    private String RetailerID;
     private String RetailerName;
     private String RetailerCategory;
 
-    public long getRetailerID() {
+    public Retailer(String retailerID, String retailerName, String retailerCategory) {
+        RetailerID = retailerID;
+        RetailerName = retailerName;
+        RetailerCategory = retailerCategory;
+    }
+
+    public String getRetailerID() {
         return RetailerID;
     }
 
-    public void setRetailerID(long retailerID) {
+    public void setRetailerID(String retailerID) {
         RetailerID = retailerID;
     }
 
@@ -32,10 +38,8 @@ public class Retailer {
 
     @Override
     public String toString() {
-        return "Retailer{" +
-                "RetailerID=" + RetailerID +
-                ", RetailerName='" + RetailerName + '\'' +
-                ", RetailerCategory='" + RetailerCategory + '\'' +
-                '}';
+        return "RetailerID: " + RetailerID +
+                "\nRetailerName: " + RetailerName +
+                "\nRetailerCategory: " + RetailerCategory;
     }
 }

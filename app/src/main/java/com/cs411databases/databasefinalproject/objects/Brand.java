@@ -2,14 +2,19 @@ package com.cs411databases.databasefinalproject.objects;
 
 //Brands (BrandID, BrandName)
 public class Brand {
-    private long BrandID;
+    private String BrandID;
     private String BrandName;
 
-    public long getBrandID() {
+    public Brand(String brandID, String brandName) {
+        BrandID = brandID;
+        BrandName = brandName;
+    }
+
+    public String getBrandID() {
         return BrandID;
     }
 
-    public void setBrandID(long brandID) {
+    public void setBrandID(String brandID) {
         BrandID = brandID;
     }
 
@@ -23,9 +28,7 @@ public class Brand {
 
     @Override
     public String toString() {
-        return "Brand{" +
-                "BrandID=" + BrandID +
-                ", BrandName='" + BrandName + '\'' +
-                '}';
+        return "BrandID: " + BrandID +
+                "\nBrandName: " + BrandName;
     }
 }

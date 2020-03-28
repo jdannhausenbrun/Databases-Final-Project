@@ -4,25 +4,33 @@ import java.sql.Date;
 
 //Transactions (TransactionID, ProductOfferingID, TransactionDate, TransactionPrice, IsReturn)
 public class Transaction {
-    private long TransactionID;
-    private long ProductOfferingID;
+    private String TransactionID;
+    private String ProductOfferingID;
     private Date TransactionDate;
-    private float TransactionPrice;
+    private Double TransactionPrice;
     private boolean IsReturn;
 
-    public long getTransactionID() {
+    public Transaction(String transactionID, String productOfferingID, Date transactionDate, Double transactionPrice, boolean isReturn) {
+        TransactionID = transactionID;
+        ProductOfferingID = productOfferingID;
+        TransactionDate = transactionDate;
+        TransactionPrice = transactionPrice;
+        IsReturn = isReturn;
+    }
+
+    public String getTransactionID() {
         return TransactionID;
     }
 
-    public void setTransactionID(long transactionID) {
+    public void setTransactionID(String transactionID) {
         TransactionID = transactionID;
     }
 
-    public long getProductOfferingID() {
+    public String getProductOfferingID() {
         return ProductOfferingID;
     }
 
-    public void setProductOfferingID(long productOfferingID) {
+    public void setProductOfferingID(String productOfferingID) {
         ProductOfferingID = productOfferingID;
     }
 
@@ -34,11 +42,11 @@ public class Transaction {
         TransactionDate = transactionDate;
     }
 
-    public float getTransactionPrice() {
+    public Double getTransactionPrice() {
         return TransactionPrice;
     }
 
-    public void setTransactionPrice(float transactionPrice) {
+    public void setTransactionPrice(Double transactionPrice) {
         TransactionPrice = transactionPrice;
     }
 
@@ -52,12 +60,10 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-                "TransactionID=" + TransactionID +
-                ", ProductOfferingID=" + ProductOfferingID +
-                ", TransactionDate=" + TransactionDate +
-                ", TransactionPrice=" + TransactionPrice +
-                ", IsReturn=" + IsReturn +
-                '}';
+        return "TransactionID: " + TransactionID +
+                "\nProductOfferingID: " + ProductOfferingID +
+                "\nTransactionDate: " + TransactionDate +
+                "\nTransactionPrice: " + TransactionPrice +
+                "\nIsReturn=" + IsReturn;
     }
 }

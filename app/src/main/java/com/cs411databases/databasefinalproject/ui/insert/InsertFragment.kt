@@ -1,15 +1,14 @@
 package com.cs411databases.databasefinalproject.ui.insert
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Spinner
+import android.widget.*
 import androidx.fragment.app.Fragment
 import com.cs411databases.databasefinalproject.R
+import java.sql.Date
 
 class InsertFragment : Fragment() {
     private var currentSpinnerSelection: Int = -1
@@ -32,6 +31,42 @@ class InsertFragment : Fragment() {
         val editText3: EditText = root.findViewById(R.id.editText3)
         val editText4: EditText = root.findViewById(R.id.editText4)
         val editText5: EditText = root.findViewById(R.id.editText5)
+        val insertButton: Button = root.findViewById(R.id.insert_button)
+        val updateButton: Button = root.findViewById(R.id.update_button)
+
+        insertButton.setOnClickListener {
+            when (currentSpinnerSelection) {
+                0 -> {
+                    editText1.text.toString()
+                    editText2.text.toString()
+                }
+                1 -> {
+                    editText1.text.toString()
+                    editText2.text.toString()
+                    Date.valueOf(editText3.text.toString())
+                    editText4.text.toString().toDouble()
+                    editText5.text.toString().toBoolean()
+                }
+                2 -> {
+                    editText1.text.toString()
+                    editText2.text.toString()
+                    editText3.text.toString()
+                }
+                3 -> {
+                    editText1.text.toString()
+                    editText2.text.toString()
+                    editText3.text.toString()
+                    editText4.text.toString()
+                }
+                4 -> {
+                    editText1.text.toString()
+                    editText2.text.toString()
+                    editText3.text.toString()
+                    editText4.text.toString().toDouble()
+                    editText5.text.toString().toDouble()
+                }
+            }
+        }
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -77,9 +112,6 @@ class InsertFragment : Fragment() {
                         editText4.hint = "Price"
                         editText5.hint = "DiscountPrice"
                         currentSpinnerSelection = 4
-                    }
-                    else -> { // Note the block
-
                     }
                 }
             }
