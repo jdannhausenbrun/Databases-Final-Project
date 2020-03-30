@@ -12,6 +12,7 @@ import java.sql.Date
 
 class InsertFragment : Fragment() {
     private var currentSpinnerSelection: Int = -1
+    private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25?q="
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -34,11 +35,16 @@ class InsertFragment : Fragment() {
         val insertButton: Button = root.findViewById(R.id.insert_button)
         val updateButton: Button = root.findViewById(R.id.update_button)
 
+
         insertButton.setOnClickListener {
             when (currentSpinnerSelection) {
                 0 -> {
                     editText1.text.toString()
                     editText2.text.toString()
+                    val url = getInsertURL("Brands", listOf(editText1.text.toString(), editText2.text.toString()))
+                    Log.e("URL", url)
+                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
+
                 }
                 1 -> {
                     editText1.text.toString()
@@ -46,17 +52,25 @@ class InsertFragment : Fragment() {
                     Date.valueOf(editText3.text.toString())
                     editText4.text.toString().toDouble()
                     editText5.text.toString().toBoolean()
+                    val url = getInsertURL("Transactions", listOf(editText1.text.toString(), editText2.text.toString(), Date.valueOf(editText3.text.toString()).toString(),editText4.text.toString().toDouble().toString(), editText5.text.toString().toBoolean().toString()))
+                    Log.e("URL", url)
+                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
                 2 -> {
                     editText1.text.toString()
                     editText2.text.toString()
                     editText3.text.toString()
+                    val url = getInsertURL("Retailers", listOf(editText1.text.toString(), editText2.text.toString(), editText3.text.toString()))
+                    Log.e("URL", url)
+                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
                 3 -> {
                     editText1.text.toString()
                     editText2.text.toString()
                     editText3.text.toString()
                     editText4.text.toString()
+                    val url = getInsertURL("Retailers", listOf(editText1.text.toString(), editText2.text.toString(), editText3.text.toString(), editText4.text.toString()))
+                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
                 4 -> {
                     editText1.text.toString()
@@ -64,6 +78,9 @@ class InsertFragment : Fragment() {
                     editText3.text.toString()
                     editText4.text.toString().toDouble()
                     editText5.text.toString().toDouble()
+                    val url = getInsertURL("Retailers", listOf(editText1.text.toString(), editText2.text.toString(), editText3.text.toString(), editText4.text.toString().toDouble().toString(), editText5.text.toString().toDouble().toString()))
+                    Log.e("URL", url)
+                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -72,6 +89,11 @@ class InsertFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                editText1.text.clear()
+                editText2.text.clear()
+                editText3.text.clear()
+                editText4.text.clear()
+                editText5.text.clear()
                 when (position) {
                     0 -> {
                         editText1.hint = "BrandID"
@@ -84,9 +106,9 @@ class InsertFragment : Fragment() {
                     1 -> {
                         editText1.hint = "TransactionID"
                         editText2.hint = "ProductOfferingID"
-                        editText3.hint = "TransactionDate"
+                        editText3.hint = "TransactionDate (YYYY-MM-DD)"
                         editText4.hint = "TransactionPrice"
-                        editText5.hint = "IsReturn"
+                        editText5.hint = "IsReturn (Y/N)"
                         currentSpinnerSelection = 1
                     }
                     2 -> {
@@ -118,5 +140,26 @@ class InsertFragment : Fragment() {
         }
 
         return root
+    }
+
+    fun getInsertURL(table: String, values: List<String>) : String {
+        print(table + values)
+        Log.e("URL", table + values)
+        var valuesStr = "("
+        for (i in values.indices) {
+            valuesStr += if (i == values.size - 1) {
+                "\"" + values[i] + "\")"
+            } else {
+                "\"" + values[i] + "\",%20"
+            }
+        }
+        return BASE_URL + "INSERT%20INTO%20" + table + "%20VALUES%20" + valuesStr
+    }
+
+    fun getUpdateURL(table: String, primaryKey: String, values: List<String>, fields: List<String>) : String {
+        print(table + primaryKey + values)
+        Log.e("URL", table + primaryKey + values)
+
+        return BASE_URL
     }
 }

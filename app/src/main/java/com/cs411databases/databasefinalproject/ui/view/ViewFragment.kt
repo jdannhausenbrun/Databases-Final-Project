@@ -31,6 +31,8 @@ class ViewFragment : Fragment() {
     private lateinit var queue: RequestQueue
     private var currentTableSelection: String = ""
 
+    private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25?q="
+
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -158,4 +160,22 @@ class ViewFragment : Fragment() {
             }
         }
     }
+
+    fun getDeleteURL(table: String, primaryKeyID: String) : String {
+        print(table + primaryKeyID)
+        Log.e("URL", table + primaryKeyID)
+        return BASE_URL + "DELETE%20FROM%20" + table + "%20WHERE%20" + table.substring(0, table.length - 1) + "ID=\"" + primaryKeyID + "\""
+    }
 }
+
+/**
+HttpClient client = new HttpClient();
+url = https://cs411sp20team25.web.illinois.edu/insert/brand;
+request = new BrandRequest(name);
+client.post(url, request)
+@app.route("/insert/brand")
+def insertBrand(@requestBody brandRequest):
+                                        brandRequest.name
+                                        id <-
+        query execute
+ **/
