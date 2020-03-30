@@ -14,6 +14,10 @@ public class Product {
         ProductType = productType;
     }
 
+    public String getID() {
+        return ProductID;
+    }
+
     public String getProductID() {
         return ProductID;
     }

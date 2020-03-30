@@ -10,6 +10,10 @@ public class Brand {
         BrandName = brandName;
     }
 
+    public String getID() {
+        return BrandID;
+    }
+
     public String getBrandID() {
         return BrandID;
     }

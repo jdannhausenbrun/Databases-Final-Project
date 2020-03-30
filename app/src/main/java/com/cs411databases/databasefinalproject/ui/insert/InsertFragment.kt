@@ -31,55 +31,58 @@ class InsertFragment : Fragment() {
         val editText2: EditText = root.findViewById(R.id.editText2)
         val editText3: EditText = root.findViewById(R.id.editText3)
         val editText4: EditText = root.findViewById(R.id.editText4)
-        val editText5: EditText = root.findViewById(R.id.editText5)
         val insertButton: Button = root.findViewById(R.id.insert_button)
-        val updateButton: Button = root.findViewById(R.id.update_button)
-
 
         insertButton.setOnClickListener {
             when (currentSpinnerSelection) {
                 0 -> {
                     editText1.text.toString()
-                    editText2.text.toString()
-                    val url = getInsertURL("Brands", listOf(editText1.text.toString(), editText2.text.toString()))
+                    val url = getInsertURL(
+                        "Brands",
+                        listOf(
+                            editText1.text.toString()))
                     Log.e("URL", url)
                     Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
 
                 }
                 1 -> {
-                    editText1.text.toString()
-                    editText2.text.toString()
-                    Date.valueOf(editText3.text.toString())
-                    editText4.text.toString().toDouble()
-                    editText5.text.toString().toBoolean()
-                    val url = getInsertURL("Transactions", listOf(editText1.text.toString(), editText2.text.toString(), Date.valueOf(editText3.text.toString()).toString(),editText4.text.toString().toDouble().toString(), editText5.text.toString().toBoolean().toString()))
+
+                    val url = getInsertURL(
+                        "Transactions",
+                        listOf(
+                            editText1.text.toString(),
+                            Date.valueOf(editText2.text.toString()).toString(),
+                            editText3.text.toString().toDouble().toString(),
+                            editText4.text.toString().toBoolean().toString()))
                     Log.e("URL", url)
                     Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
                 2 -> {
-                    editText1.text.toString()
-                    editText2.text.toString()
-                    editText3.text.toString()
-                    val url = getInsertURL("Retailers", listOf(editText1.text.toString(), editText2.text.toString(), editText3.text.toString()))
+                    val url = getInsertURL(
+                        "Retailers",
+                        listOf(
+                            editText1.text.toString(),
+                            editText2.text.toString()))
                     Log.e("URL", url)
                     Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
                 3 -> {
-                    editText1.text.toString()
-                    editText2.text.toString()
-                    editText3.text.toString()
-                    editText4.text.toString()
-                    val url = getInsertURL("Retailers", listOf(editText1.text.toString(), editText2.text.toString(), editText3.text.toString(), editText4.text.toString()))
+                    val url = getInsertURL(
+                        "Retailers",
+                        listOf(
+                            editText1.text.toString(),
+                            editText2.text.toString(),
+                            editText3.text.toString()))
                     Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
                 4 -> {
-                    editText1.text.toString()
-                    editText2.text.toString()
-                    editText3.text.toString()
-                    editText4.text.toString().toDouble()
-                    editText5.text.toString().toDouble()
-                    val url = getInsertURL("Retailers", listOf(editText1.text.toString(), editText2.text.toString(), editText3.text.toString(), editText4.text.toString().toDouble().toString(), editText5.text.toString().toDouble().toString()))
-                    Log.e("URL", url)
+                    val url = getInsertURL(
+                        "Retailers",
+                        listOf(
+                            editText1.text.toString(),
+                            editText2.text.toString(),
+                            editText3.text.toString().toDouble().toString(),
+                            editText4.text.toString().toDouble().toString()))
                     Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -93,46 +96,40 @@ class InsertFragment : Fragment() {
                 editText2.text.clear()
                 editText3.text.clear()
                 editText4.text.clear()
-                editText5.text.clear()
                 when (position) {
                     0 -> {
-                        editText1.hint = "BrandID"
-                        editText2.hint = "BrandName"
+                        editText1.hint = "BrandName"
+                        editText2.hint = "N/A"
                         editText3.hint = "N/A"
                         editText4.hint = "N/A"
-                        editText5.hint = "N/A"
                         currentSpinnerSelection = 0
                     }
                     1 -> {
-                        editText1.hint = "TransactionID"
-                        editText2.hint = "ProductOfferingID"
-                        editText3.hint = "TransactionDate (YYYY-MM-DD)"
-                        editText4.hint = "TransactionPrice"
-                        editText5.hint = "IsReturn (Y/N)"
+                        editText1.hint = "ProductOfferingID"
+                        editText2.hint = "TransactionDate (YYYY-MM-DD)"
+                        editText3.hint = "TransactionPrice"
+                        editText4.hint = "IsReturn (Y/N)"
                         currentSpinnerSelection = 1
                     }
                     2 -> {
-                        editText1.hint = "RetailerID"
-                        editText2.hint = "RetailerName"
-                        editText3.hint = "RetailerCategory"
+                        editText1.hint = "RetailerName"
+                        editText2.hint = "RetailerCategory"
+                        editText3.hint = "N/A"
                         editText4.hint = "N/A"
-                        editText5.hint = "N/A"
                         currentSpinnerSelection = 2
                     }
                     3 -> {
-                        editText1.hint = "ProductID"
-                        editText2.hint = "BrandID"
-                        editText3.hint = "ProductName"
-                        editText4.hint = "ProductType"
-                        editText5.hint = "N/A"
+                        editText1.hint = "BrandID"
+                        editText2.hint = "ProductName"
+                        editText3.hint = "ProductType"
+                        editText4.hint = "N/A"
                         currentSpinnerSelection = 3
                     }
                     4 -> {
-                        editText1.hint = "ProductOfferingID"
-                        editText2.hint = "RetailerID"
-                        editText3.hint = "ProductID"
-                        editText4.hint = "Price"
-                        editText5.hint = "DiscountPrice"
+                        editText1.hint = "RetailerID"
+                        editText2.hint = "ProductID"
+                        editText3.hint = "Price"
+                        editText4.hint = "DiscountPrice"
                         currentSpinnerSelection = 4
                     }
                 }
@@ -154,12 +151,5 @@ class InsertFragment : Fragment() {
             }
         }
         return BASE_URL + "INSERT%20INTO%20" + table + "%20VALUES%20" + valuesStr
-    }
-
-    fun getUpdateURL(table: String, primaryKey: String, values: List<String>, fields: List<String>) : String {
-        print(table + primaryKey + values)
-        Log.e("URL", table + primaryKey + values)
-
-        return BASE_URL
     }
 }

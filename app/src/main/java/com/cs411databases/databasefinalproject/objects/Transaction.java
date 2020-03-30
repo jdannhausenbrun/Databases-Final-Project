@@ -18,6 +18,10 @@ public class Transaction {
         IsReturn = isReturn;
     }
 
+    public String getID() {
+        return TransactionID;
+    }
+
     public String getTransactionID() {
         return TransactionID;
     }
@@ -60,10 +64,16 @@ public class Transaction {
 
     @Override
     public String toString() {
+        String isReturnText = "";
+        if(IsReturn) {
+            isReturnText = "Yes";
+        } else {
+            isReturnText = "No";
+        }
         return "TransactionID: " + TransactionID +
                 "\nProductOfferingID: " + ProductOfferingID +
                 "\nTransactionDate: " + TransactionDate +
                 "\nTransactionPrice: " + TransactionPrice +
-                "\nIsReturn=" + IsReturn;
+                "\nIsReturn: " + isReturnText;
     }
 }

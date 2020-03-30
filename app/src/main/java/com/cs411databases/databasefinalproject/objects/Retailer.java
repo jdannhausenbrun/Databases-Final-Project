@@ -12,6 +12,10 @@ public class Retailer {
         RetailerCategory = retailerCategory;
     }
 
+    public String getID() {
+        return RetailerID;
+    }
+
     public String getRetailerID() {
         return RetailerID;
     }

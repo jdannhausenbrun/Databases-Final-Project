@@ -22,6 +22,7 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import com.cs411databases.databasefinalproject.R
 import com.cs411databases.databasefinalproject.objects.*
+import kotlinx.android.synthetic.main.update_dialog.view.*
 import org.json.JSONArray
 import java.sql.Date
 
@@ -122,8 +123,56 @@ class ViewFragment : Fragment() {
         queue.add(request)
     }
 
-    fun deleteEntry(position: Int) {
-        Log.e("Jacob", "Position: $position")
+    fun deleteEntry(position: Int) {}
+
+    fun updateEntry(position: Int) {}
+
+    fun createAndHandleUpdateAlertDialog(position: Int) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.update_dialog, null)
+        val dialogBuilder = AlertDialog.Builder(context)
+            .setCancelable(true)
+            .setView(dialogView)
+            .setPositiveButton("Update", DialogInterface.OnClickListener { dialog, id ->
+                updateEntry(position)
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
+                dialog.cancel()
+            })
+        val alert = dialogBuilder.create()
+        alert.setTitle("Update Entry")
+        alert.show()
+        when (currentTableSelection) {
+            "Brands" -> {
+                dialogView.editText1.hint = "BrandName"
+                dialogView.editText2.hint = "N/A"
+                dialogView.editText3.hint = "N/A"
+                dialogView.editText4.hint = "N/A"
+            }
+            "Transactions" -> {
+                dialogView.editText1.hint = "ProductOfferingID"
+                dialogView.editText2.hint = "TransactionDate (YYYY-MM-DD)"
+                dialogView.editText3.hint = "TransactionPrice"
+                dialogView.editText4.hint = "IsReturn (Y/N)"
+            }
+            "Retailers" -> {
+                dialogView.editText1.hint = "RetailerName"
+                dialogView.editText2.hint = "RetailerCategory"
+                dialogView.editText3.hint = "N/A"
+                dialogView.editText4.hint = "N/A"
+            }
+            "Products" -> {
+                dialogView.editText1.hint = "BrandID"
+                dialogView.editText2.hint = "ProductName"
+                dialogView.editText3.hint = "ProductType"
+                dialogView.editText4.hint = "N/A"
+            }
+            "ProductsForSale" -> {
+                dialogView.editText1.hint = "RetailerID"
+                dialogView.editText2.hint = "ProductID"
+                dialogView.editText3.hint = "Price"
+                dialogView.editText4.hint = "DiscountPrice"
+            }
+        }
     }
 
     class ListAdapter(private val list: List<Any>, private val context: Context, private val viewFragment: ViewFragment):
@@ -150,16 +199,16 @@ class ViewFragment : Fragment() {
                 textView.text = obj.toString()
                 itemView.setOnClickListener {
                     val dialogBuilder = AlertDialog.Builder(context)
-                    dialogBuilder.setMessage("Are you sure?")
                         .setCancelable(true)
-                        .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
+                        .setPositiveButton("Delete", DialogInterface.OnClickListener { dialog, id ->
                             viewFragment.deleteEntry(position)
                         })
-                        .setNegativeButton("No", DialogInterface.OnClickListener {
-                                dialog, id -> dialog.cancel()
+                        .setNegativeButton("Update", DialogInterface.OnClickListener { dialog, id ->
+                            viewFragment.createAndHandleUpdateAlertDialog(position)
+                            dialog.cancel()
                         })
                     val alert = dialogBuilder.create()
-                    alert.setTitle("Deleting Entry")
+                    alert.setTitle("Update or Delete?")
                     alert.show()
                 }
             }

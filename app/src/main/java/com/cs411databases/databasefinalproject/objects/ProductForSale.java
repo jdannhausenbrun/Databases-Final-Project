@@ -16,6 +16,10 @@ public class ProductForSale {
         DiscountPrice = discountPrice;
     }
 
+    public String getID() {
+        return ProductOfferingID;
+    }
+
     public String getProductOfferingID() {
         return ProductOfferingID;
     }
