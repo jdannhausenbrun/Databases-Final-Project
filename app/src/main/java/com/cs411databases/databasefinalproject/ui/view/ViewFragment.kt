@@ -29,7 +29,7 @@ class ViewFragment : Fragment() {
     private lateinit var listOfItems: MutableList<Any>
     private lateinit var listAdapter: ListAdapter
     private lateinit var queue: RequestQueue
-    private var currentTableSelection: String = ""
+    var currentTableSelection: String = ""
 
     private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25?q="
 
@@ -48,7 +48,7 @@ class ViewFragment : Fragment() {
 
         val recyclerView: RecyclerView = root.findViewById(R.id.view_recyclerview)
         listOfItems = mutableListOf()
-        listAdapter = ListAdapter(listOfItems, context!!)
+        listAdapter = ListAdapter(listOfItems, context!!, this)
 
         queue = Volley.newRequestQueue(context)
 
@@ -78,11 +78,11 @@ class ViewFragment : Fragment() {
         val url = "https://cs411sp20team25.web.illinois.edu/team25?q=SELECT%20*%20FROM%20$table"
         currentTableSelection = table
 
+
         // Request a string response from the provided URL.
         val request = JsonArrayRequest(
             Request.Method.GET, url, null,
             Response.Listener<JSONArray> { response ->
-                Log.e("Jacob", response.toString())
                 listOfItems.clear()
                 for (index in 0 until response.length()) {
                     val elements: JSONArray = response[index] as JSONArray
@@ -122,7 +122,12 @@ class ViewFragment : Fragment() {
         queue.add(request)
     }
 
-    class ListAdapter(private val list: List<Any>, private val context: Context): RecyclerView.Adapter<ListAdapter.ObjectViewHolder>() {
+    fun deleteEntry(position: Int) {
+        Log.e("Jacob", "Position: $position")
+    }
+
+    class ListAdapter(private val list: List<Any>, private val context: Context, private val viewFragment: ViewFragment):
+            RecyclerView.Adapter<ListAdapter.ObjectViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObjectViewHolder {
             val inflater = LayoutInflater.from(parent.context)
@@ -131,7 +136,7 @@ class ViewFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ObjectViewHolder, position: Int) {
             val obj: Any = list[position]
-            holder.bind(obj, context)
+            holder.bind(obj, context, viewFragment, position)
         }
 
         override fun getItemCount(): Int = list.size
@@ -141,14 +146,14 @@ class ViewFragment : Fragment() {
 
             private var textView: TextView = itemView.findViewById(R.id.list_item_text)
 
-            fun bind(obj: Any, context: Context) {
+            fun bind(obj: Any, context: Context, viewFragment: ViewFragment, position: Int) {
                 textView.text = obj.toString()
                 itemView.setOnClickListener {
                     val dialogBuilder = AlertDialog.Builder(context)
                     dialogBuilder.setMessage("Are you sure?")
                         .setCancelable(true)
-                        .setPositiveButton("Yes", DialogInterface.OnClickListener {
-                                dialog, id -> Log.e("Jacob", "Delete: ${textView.text}")
+                        .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
+                            viewFragment.deleteEntry(position)
                         })
                         .setNegativeButton("No", DialogInterface.OnClickListener {
                                 dialog, id -> dialog.cancel()
