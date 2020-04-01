@@ -1,7 +1,7 @@
 package com.cs411databases.databasefinalproject.objects;
 
 //Retailers (RetailerID, RetailerName, RetailerCategory)
-public class Retailer {
+public class Retailer implements DatabaseObject {
     private String RetailerID;
     private String RetailerName;
     private String RetailerCategory;

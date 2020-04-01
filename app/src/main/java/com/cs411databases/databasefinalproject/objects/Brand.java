@@ -1,7 +1,7 @@
 package com.cs411databases.databasefinalproject.objects;
 
 //Brands (BrandID, BrandName)
-public class Brand {
+public class Brand implements DatabaseObject {
     private String BrandID;
     private String BrandName;
 

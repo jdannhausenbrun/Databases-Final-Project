@@ -19,6 +19,7 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.cs411databases.databasefinalproject.R
 import com.cs411databases.databasefinalproject.objects.*
@@ -27,12 +28,14 @@ import org.json.JSONArray
 import java.sql.Date
 
 class ViewFragment : Fragment() {
-    private lateinit var listOfItems: MutableList<Any>
+    private lateinit var listOfItems: MutableList<DatabaseObject>
     private lateinit var listAdapter: ListAdapter
     private lateinit var queue: RequestQueue
+    private lateinit var spinner: Spinner
     var currentTableSelection: String = ""
 
-    private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25?q="
+    private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25/"
+    private val DELETE = "delete"
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -41,7 +44,7 @@ class ViewFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_view, container, false)
 
-        val spinner: Spinner = root.findViewById(R.id.view_spinner)
+        spinner = root.findViewById(R.id.view_spinner)
         val spinnerItems: List<String> = listOf("Brands", "Transactions", "Retailers", "Products", "ProductsForSale")
         val spinnerAdapter: ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, spinnerItems)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -76,11 +79,10 @@ class ViewFragment : Fragment() {
     }
 
     fun updateViewList(table: String) {
-        val url = "https://cs411sp20team25.web.illinois.edu/team25?q=SELECT%20*%20FROM%20$table"
+        var url = BASE_URL + table
+        url = "https://cs411sp20team25.web.illinois.edu/team25?q=SELECT%20*%20FROM%20$table"
         currentTableSelection = table
 
-
-        // Request a string response from the provided URL.
         val request = JsonArrayRequest(
             Request.Method.GET, url, null,
             Response.Listener<JSONArray> { response ->
@@ -123,7 +125,19 @@ class ViewFragment : Fragment() {
         queue.add(request)
     }
 
-    fun deleteEntry(position: Int) {}
+    fun deleteEntry(position: Int) {
+        val url = BASE_URL + currentTableSelection + DELETE + listOfItems[position].id
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            Response.Listener<String> { response ->
+                Log.d("Delete Request", response)
+                // Reload the list of items
+                updateViewList(currentTableSelection)
+            },
+            Response.ErrorListener { error -> Log.d("Delete Request", error.toString()) })
+
+        queue.add(stringRequest)
+    }
 
     fun updateEntry(position: Int) {}
 
@@ -175,7 +189,7 @@ class ViewFragment : Fragment() {
         }
     }
 
-    class ListAdapter(private val list: List<Any>, private val context: Context, private val viewFragment: ViewFragment):
+    class ListAdapter(private val list: List<DatabaseObject>, private val context: Context, private val viewFragment: ViewFragment):
             RecyclerView.Adapter<ListAdapter.ObjectViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObjectViewHolder {
@@ -184,7 +198,7 @@ class ViewFragment : Fragment() {
         }
 
         override fun onBindViewHolder(holder: ObjectViewHolder, position: Int) {
-            val obj: Any = list[position]
+            val obj: DatabaseObject = list[position]
             holder.bind(obj, context, viewFragment, position)
         }
 
@@ -195,7 +209,7 @@ class ViewFragment : Fragment() {
 
             private var textView: TextView = itemView.findViewById(R.id.list_item_text)
 
-            fun bind(obj: Any, context: Context, viewFragment: ViewFragment, position: Int) {
+            fun bind(obj: DatabaseObject, context: Context, viewFragment: ViewFragment, position: Int) {
                 textView.text = obj.toString()
                 itemView.setOnClickListener {
                     val dialogBuilder = AlertDialog.Builder(context)
@@ -214,22 +228,4 @@ class ViewFragment : Fragment() {
             }
         }
     }
-
-    fun getDeleteURL(table: String, primaryKeyID: String) : String {
-        print(table + primaryKeyID)
-        Log.e("URL", table + primaryKeyID)
-        return BASE_URL + "DELETE%20FROM%20" + table + "%20WHERE%20" + table.substring(0, table.length - 1) + "ID=\"" + primaryKeyID + "\""
-    }
 }
-
-/**
-HttpClient client = new HttpClient();
-url = https://cs411sp20team25.web.illinois.edu/insert/brand;
-request = new BrandRequest(name);
-client.post(url, request)
-@app.route("/insert/brand")
-def insertBrand(@requestBody brandRequest):
-                                        brandRequest.name
-                                        id <-
-        query execute
- **/

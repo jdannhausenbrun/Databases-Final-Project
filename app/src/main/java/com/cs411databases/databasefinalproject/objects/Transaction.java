@@ -3,7 +3,7 @@ package com.cs411databases.databasefinalproject.objects;
 import java.sql.Date;
 
 //Transactions (TransactionID, ProductOfferingID, TransactionDate, TransactionPrice, IsReturn)
-public class Transaction {
+public class Transaction implements DatabaseObject {
     private String TransactionID;
     private String ProductOfferingID;
     private Date TransactionDate;
