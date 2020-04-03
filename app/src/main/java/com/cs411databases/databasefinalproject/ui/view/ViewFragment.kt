@@ -34,8 +34,7 @@ class ViewFragment : Fragment() {
     private lateinit var spinner: Spinner
     var currentTableSelection: String = ""
 
-    private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25/"
-    private val DELETE = "delete"
+    private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25"
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -79,8 +78,7 @@ class ViewFragment : Fragment() {
     }
 
     fun updateViewList(table: String) {
-        var url = BASE_URL + table
-        url = "https://cs411sp20team25.web.illinois.edu/team25?q=SELECT%20*%20FROM%20$table"
+        var url = "$BASE_URL?action=select&table=$table"
         currentTableSelection = table
 
         val request = JsonArrayRequest(
@@ -91,26 +89,26 @@ class ViewFragment : Fragment() {
                     val elements: JSONArray = response[index] as JSONArray
                     when (table) {
                         "Brands" -> {
-                            val brand = Brand(elements[0] as String, elements[1] as String)
+                            val brand = Brand((elements[0] as String).toInt(), elements[1] as String)
                             listOfItems.add(brand)
                         }
                         "Transactions" -> {
-                            val transaction = Transaction(elements[0] as String, elements[1] as String,
-                                Date.valueOf(elements[2] as String), (elements[3] as String).toDouble(), (elements[4] as String).toBoolean())
+                            val transaction = Transaction((elements[0] as String).toInt(), (elements[1] as String).toInt(),
+                                Date.valueOf(elements[2] as String), (elements[3] as String).toDouble(), (elements[4] as String).toInt() == 1)
                             listOfItems.add(transaction)
                         }
                         "Retailers" -> {
-                            val retailer = Retailer(elements[0] as String, elements[1] as String, elements[2] as String)
+                            val retailer = Retailer((elements[0] as String).toInt(), elements[1] as String, elements[2] as String)
                             listOfItems.add(retailer)
                         }
                         "Products" -> {
-                            val product = Product(elements[0] as String, elements[1] as String, elements[2] as String,
+                            val product = Product((elements[0] as String).toInt(), (elements[1] as String).toInt(), elements[2] as String,
                                     elements[3] as String)
                             listOfItems.add(product)
                         }
                         "ProductsForSale" -> {
-                            val productForSale = ProductForSale(elements[0] as String, elements[1] as String,
-                                    elements[2] as String, (elements[3] as String).toDouble(), (elements[4] as String).toDouble())
+                            val productForSale = ProductForSale((elements[0] as String).toInt(), (elements[1] as String).toInt(),
+                                (elements[2] as String).toInt(), (elements[3] as String).toDouble(), (elements[4] as String).toDouble())
                             listOfItems.add(productForSale)
                         }
                     }
@@ -126,7 +124,7 @@ class ViewFragment : Fragment() {
     }
 
     fun deleteEntry(position: Int) {
-        val url = BASE_URL + currentTableSelection + DELETE + listOfItems[position].id
+        val url = "$BASE_URL?action=delete&table=$currentTableSelection&id=${listOfItems[position].id}"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
             Response.Listener<String> { response ->
@@ -139,7 +137,41 @@ class ViewFragment : Fragment() {
         queue.add(stringRequest)
     }
 
-    fun updateEntry(position: Int) {}
+    fun updateEntry(position: Int, text1: String, text2: String, text3: String, text4: String) {
+        var updateValues = ""
+        if (text1.isNotEmpty()) {
+            updateValues += "&c=${listOfItems[position].getAttributeName(1)}&v=$text1"
+        }
+        if (text2.isNotEmpty()) {
+            updateValues += "&c=${listOfItems[position].getAttributeName(2)}&v=$text2"
+        }
+        if (text3.isNotEmpty()) {
+            updateValues += "&c=${listOfItems[position].getAttributeName(3)}&v=$text3"
+        }
+        if (text4.isNotEmpty()) {
+            var text4Formatted = text4
+            if (listOfItems[position].getAttributeName(4) == "IsReturn") {
+                if (text4.toLowerCase() == "yes") {
+                    text4Formatted = "1"
+                } else if (text4.toLowerCase() == "no") {
+                    text4Formatted = "0"
+                }
+            }
+            updateValues += "&c=${listOfItems[position].getAttributeName(4)}&v=$text4Formatted"
+        }
+        val url = "$BASE_URL?action=update&table=$currentTableSelection$updateValues" +
+                "&wc=${listOfItems[position].idColumnName}&wv=${listOfItems[position].id}"
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            Response.Listener<String> { response ->
+                Log.d("Update Request", response)
+                // Reload the list of items
+                updateViewList(currentTableSelection)
+            },
+            Response.ErrorListener { error -> Log.d("Update Request", error.toString()) })
+
+        queue.add(stringRequest)
+    }
 
     fun createAndHandleUpdateAlertDialog(position: Int) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.update_dialog, null)
@@ -147,7 +179,8 @@ class ViewFragment : Fragment() {
             .setCancelable(true)
             .setView(dialogView)
             .setPositiveButton("Update", DialogInterface.OnClickListener { dialog, id ->
-                updateEntry(position)
+                updateEntry(position, dialogView.editText1.text.toString(), dialogView.editText2.text.toString(),
+                    dialogView.editText3.text.toString(), dialogView.editText4.text.toString())
             })
             .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
                 dialog.cancel()
@@ -166,7 +199,7 @@ class ViewFragment : Fragment() {
                 dialogView.editText1.hint = "ProductOfferingID"
                 dialogView.editText2.hint = "TransactionDate (YYYY-MM-DD)"
                 dialogView.editText3.hint = "TransactionPrice"
-                dialogView.editText4.hint = "IsReturn (Y/N)"
+                dialogView.editText4.hint = "IsReturn (Yes/No)"
             }
             "Retailers" -> {
                 dialogView.editText1.hint = "RetailerName"

@@ -1,16 +1,19 @@
 package com.cs411databases.databasefinalproject.objects;
 
 import java.sql.Date;
+import java.util.Arrays;
+import java.util.List;
 
 //Transactions (TransactionID, ProductOfferingID, TransactionDate, TransactionPrice, IsReturn)
 public class Transaction implements DatabaseObject {
-    private String TransactionID;
-    private String ProductOfferingID;
+    private int TransactionID;
+    private int ProductOfferingID;
     private Date TransactionDate;
     private Double TransactionPrice;
     private boolean IsReturn;
+    private static List<String> attributeNames = Arrays.asList("ProductOfferingID", "TransactionDate", "TransactionPrice", "IsReturn");
 
-    public Transaction(String transactionID, String productOfferingID, Date transactionDate, Double transactionPrice, boolean isReturn) {
+    public Transaction(int transactionID, int productOfferingID, Date transactionDate, Double transactionPrice, boolean isReturn) {
         TransactionID = transactionID;
         ProductOfferingID = productOfferingID;
         TransactionDate = transactionDate;
@@ -18,23 +21,31 @@ public class Transaction implements DatabaseObject {
         IsReturn = isReturn;
     }
 
-    public String getID() {
+    public int getID() {
         return TransactionID;
     }
 
-    public String getTransactionID() {
+    public String getIDColumnName() {
+        return "TransactionID";
+    }
+
+    public String getAttributeName(int index) {
+        return attributeNames.get(index - 1);
+    }
+
+    public int getTransactionID() {
         return TransactionID;
     }
 
-    public void setTransactionID(String transactionID) {
+    public void setTransactionID(int transactionID) {
         TransactionID = transactionID;
     }
 
-    public String getProductOfferingID() {
+    public int getProductOfferingID() {
         return ProductOfferingID;
     }
 
-    public void setProductOfferingID(String productOfferingID) {
+    public void setProductOfferingID(int productOfferingID) {
         ProductOfferingID = productOfferingID;
     }
 

@@ -1,5 +1,7 @@
 package com.cs411databases.databasefinalproject.objects;
 
 public interface DatabaseObject {
-    String getID();
+    int getID();
+    String getIDColumnName();
+    String getAttributeName(int index);
 }

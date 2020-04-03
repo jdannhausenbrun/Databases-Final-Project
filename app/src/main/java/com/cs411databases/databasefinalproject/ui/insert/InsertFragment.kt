@@ -7,12 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.cs411databases.databasefinalproject.R
 import java.sql.Date
 
 class InsertFragment : Fragment() {
     private var currentSpinnerSelection: Int = -1
-    private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25?q="
+    private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25"
+    private lateinit var queue: RequestQueue
+    private lateinit var editText1: EditText
+    private lateinit var editText2: EditText
+    private lateinit var editText3: EditText
+    private lateinit var editText4: EditText
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -27,63 +37,57 @@ class InsertFragment : Fragment() {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = spinnerAdapter
 
-        val editText1: EditText = root.findViewById(R.id.editText1)
-        val editText2: EditText = root.findViewById(R.id.editText2)
-        val editText3: EditText = root.findViewById(R.id.editText3)
-        val editText4: EditText = root.findViewById(R.id.editText4)
+        editText1 = root.findViewById(R.id.editText1)
+        editText2 = root.findViewById(R.id.editText2)
+        editText3 = root.findViewById(R.id.editText3)
+        editText4 = root.findViewById(R.id.editText4)
         val insertButton: Button = root.findViewById(R.id.insert_button)
+
+        queue = Volley.newRequestQueue(context)
 
         insertButton.setOnClickListener {
             when (currentSpinnerSelection) {
                 0 -> {
                     editText1.text.toString()
-                    val url = getInsertURL(
+                    val url = insertEntry(
                         "Brands",
                         listOf(
                             editText1.text.toString()))
-                    Log.e("URL", url)
-                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
 
                 }
                 1 -> {
 
-                    val url = getInsertURL(
+                    val url = insertEntry(
                         "Transactions",
                         listOf(
-                            editText1.text.toString(),
+                            editText1.text.toString().toInt().toString(),
                             Date.valueOf(editText2.text.toString()).toString(),
                             editText3.text.toString().toDouble().toString(),
-                            editText4.text.toString().toBoolean().toString()))
-                    Log.e("URL", url)
-                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
+                            editText4.text.toString()))
                 }
                 2 -> {
-                    val url = getInsertURL(
+                    val url = insertEntry(
                         "Retailers",
                         listOf(
                             editText1.text.toString(),
                             editText2.text.toString()))
-                    Log.e("URL", url)
-                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
                 3 -> {
-                    val url = getInsertURL(
-                        "Retailers",
+                    val url = insertEntry(
+                        "Products",
                         listOf(
-                            editText1.text.toString(),
+                            editText1.text.toString().toInt().toString(),
                             editText2.text.toString(),
                             editText3.text.toString()))
-                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
                 4 -> {
-                    val url = getInsertURL(
-                        "Retailers",
+                    val url = insertEntry(
+                        "ProductsForSale",
                         listOf(
-                            editText1.text.toString(),
-                            editText2.text.toString(),
+                            editText1.text.toString().toInt().toString(),
+                            editText2.text.toString().toInt().toString(),
                             editText3.text.toString().toDouble().toString(),
                             editText4.text.toString().toDouble().toString()))
-                    Toast.makeText(context, url, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -108,7 +112,7 @@ class InsertFragment : Fragment() {
                         editText1.hint = "ProductOfferingID"
                         editText2.hint = "TransactionDate (YYYY-MM-DD)"
                         editText3.hint = "TransactionPrice"
-                        editText4.hint = "IsReturn (Y/N)"
+                        editText4.hint = "IsReturn (Yes/No)"
                         currentSpinnerSelection = 1
                     }
                     2 -> {
@@ -139,17 +143,37 @@ class InsertFragment : Fragment() {
         return root
     }
 
-    fun getInsertURL(table: String, values: List<String>) : String {
-        print(table + values)
-        Log.e("URL", table + values)
-        var valuesStr = "("
-        for (i in values.indices) {
-            valuesStr += if (i == values.size - 1) {
-                "\"" + values[i] + "\")"
+    private fun insertEntry(table: String, values: List<String>) {
+        var url = "$BASE_URL?action=insert&table=$table"
+
+        for (index in values.indices) {
+            if (table == "Transactions" && index == 3) {
+                if (values[index].toLowerCase() == "yes") {
+                    url += "&v=1"
+                } else if (values[index].toLowerCase() == "no") {
+                    url += "&v=0"
+                }
             } else {
-                "\"" + values[i] + "\",%20"
+                url += "&v=${values[index]}"
             }
         }
-        return BASE_URL + "INSERT%20INTO%20" + table + "%20VALUES%20" + valuesStr
+
+        url = url.replace(" ", "%20")
+
+        val stringRequest = StringRequest(
+            Request.Method.GET, url,
+            Response.Listener<String> { response ->
+                Log.d("Insert Request", response)
+            },
+            Response.ErrorListener { error ->
+                Log.d("Insert Request", error.toString())
+            })
+
+        queue.add(stringRequest)
+
+        editText1.text.clear()
+        editText2.text.clear()
+        editText3.text.clear()
+        editText4.text.clear()
     }
 }

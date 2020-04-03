@@ -1,14 +1,18 @@
 package com.cs411databases.databasefinalproject.objects;
 
+import java.util.Arrays;
+import java.util.List;
+
 //ProductsForSale (ProductOfferingID, RetailerID, ProductID, Price, DiscountPrice)
 public class ProductForSale implements DatabaseObject {
-    private String ProductOfferingID;
-    private String RetailerID;
-    private String ProductID;
+    private int ProductOfferingID;
+    private int RetailerID;
+    private int ProductID;
     private Double Price;
     private Double DiscountPrice;
+    private static List<String> attributeNames = Arrays.asList("RetailerID", "ProductID", "Price", "DiscountPrice");
 
-    public ProductForSale(String productOfferingID, String retailerID, String productID, Double price, Double discountPrice) {
+    public ProductForSale(int productOfferingID, int retailerID, int productID, Double price, Double discountPrice) {
         ProductOfferingID = productOfferingID;
         RetailerID = retailerID;
         ProductID = productID;
@@ -16,31 +20,39 @@ public class ProductForSale implements DatabaseObject {
         DiscountPrice = discountPrice;
     }
 
-    public String getID() {
+    public int getID() {
         return ProductOfferingID;
     }
 
-    public String getProductOfferingID() {
+    public String getIDColumnName() {
+        return "ProductOfferingID";
+    }
+
+    public String getAttributeName(int index) {
+        return attributeNames.get(index - 1);
+    }
+
+    public int getProductOfferingID() {
         return ProductOfferingID;
     }
 
-    public void setProductOfferingID(String productOfferingID) {
+    public void setProductOfferingID(int productOfferingID) {
         ProductOfferingID = productOfferingID;
     }
 
-    public String getRetailerID() {
+    public int getRetailerID() {
         return RetailerID;
     }
 
-    public void setRetailerID(String retailerID) {
+    public void setRetailerID(int retailerID) {
         RetailerID = retailerID;
     }
 
-    public String getProductID() {
+    public int getProductID() {
         return ProductID;
     }
 
-    public void setProductID(String productID) {
+    public void setProductID(int productID) {
         ProductID = productID;
     }
 

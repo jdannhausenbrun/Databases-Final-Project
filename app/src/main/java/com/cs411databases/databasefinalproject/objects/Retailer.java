@@ -1,26 +1,38 @@
 package com.cs411databases.databasefinalproject.objects;
 
+import java.util.Arrays;
+import java.util.List;
+
 //Retailers (RetailerID, RetailerName, RetailerCategory)
 public class Retailer implements DatabaseObject {
-    private String RetailerID;
+    private int RetailerID;
     private String RetailerName;
     private String RetailerCategory;
+    private static List<String> attributeNames = Arrays.asList("RetailerName", "RetailerCategory");
 
-    public Retailer(String retailerID, String retailerName, String retailerCategory) {
+    public Retailer(int retailerID, String retailerName, String retailerCategory) {
         RetailerID = retailerID;
         RetailerName = retailerName;
         RetailerCategory = retailerCategory;
     }
 
-    public String getID() {
+    public int getID() {
         return RetailerID;
     }
 
-    public String getRetailerID() {
+    public String getIDColumnName() {
+        return "RetailerID";
+    }
+
+    public String getAttributeName(int index) {
+        return attributeNames.get(index - 1);
+    }
+
+    public int getRetailerID() {
         return RetailerID;
     }
 
-    public void setRetailerID(String retailerID) {
+    public void setRetailerID(int retailerID) {
         RetailerID = retailerID;
     }
 

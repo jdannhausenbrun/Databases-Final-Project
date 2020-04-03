@@ -1,36 +1,48 @@
 package com.cs411databases.databasefinalproject.objects;
 
+import java.util.Arrays;
+import java.util.List;
+
 //Products (ProductID, BrandID, ProductName, ProductType)
 public class Product implements DatabaseObject {
-    private String ProductID;
-    private String BrandID;
+    private int ProductID;
+    private int BrandID;
     private String ProductName;
     private String ProductType;
+    private static List<String> attributeNames = Arrays.asList("BrandID", "ProductName", "ProductType");
 
-    public Product(String productID, String brandID, String productName, String productType) {
+    public Product(int productID, int brandID, String productName, String productType) {
         ProductID = productID;
         BrandID = brandID;
         ProductName = productName;
         ProductType = productType;
     }
 
-    public String getID() {
+    public int getID() {
         return ProductID;
     }
 
-    public String getProductID() {
+    public String getIDColumnName() {
+        return "ProductID";
+    }
+
+    public String getAttributeName(int index) {
+        return attributeNames.get(index - 1);
+    }
+
+    public int getProductID() {
         return ProductID;
     }
 
-    public void setProductID(String productID) {
+    public void setProductID(int productID) {
         ProductID = productID;
     }
 
-    public String getBrandID() {
+    public int getBrandID() {
         return BrandID;
     }
 
-    public void setBrandID(String brandID) {
+    public void setBrandID(int brandID) {
         BrandID = brandID;
     }
 
