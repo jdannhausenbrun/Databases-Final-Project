@@ -30,12 +30,6 @@ class RetailerFragment(private val insertFragment: InsertFragment) : Fragment() 
         spinner1 = view.findViewById(R.id.spinner1)
         insertButton = view.findViewById(R.id.button)
 
-        val spinnerItems: List<String> = listOf("(Category)", "Online", "Department", "Specialty Apparel",
-            "Boutique", "Sporting Goods", "Miscellaneous")
-        val spinnerAdapter: ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, spinnerItems)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner1.adapter = spinnerAdapter
-
         insertButton.setOnClickListener {
             if (spinner1.selectedItemPosition != 0) {
                 insertEntry("Retailers", listOf(editText1.text.toString(), spinner1.selectedItem as String))

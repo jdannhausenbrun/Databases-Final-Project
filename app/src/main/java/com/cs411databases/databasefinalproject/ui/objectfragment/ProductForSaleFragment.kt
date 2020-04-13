@@ -17,6 +17,7 @@ import com.android.volley.toolbox.Volley
 
 import com.cs411databases.databasefinalproject.R
 import com.cs411databases.databasefinalproject.ui.insert.InsertFragment
+import com.cs411databases.databasefinalproject.utils.SpinnerUtils
 import org.json.JSONArray
 
 class ProductForSaleFragment(private val insertFragment: InsertFragment) : Fragment() {
@@ -40,47 +41,8 @@ class ProductForSaleFragment(private val insertFragment: InsertFragment) : Fragm
         editText2 = view.findViewById(R.id.editText2)
         insertButton = view.findViewById(R.id.button)
 
-        val spinnerItems1: MutableList<String> = mutableListOf("(Retailer)")
-        val spinnerAdapter1: ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, spinnerItems1)
-        spinnerAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner1.adapter = spinnerAdapter1
-
-        val request1 = JsonArrayRequest(
-            Request.Method.GET, "https://cs411sp20team25.web.illinois.edu/team25?action=select&table=Retailers", null,
-            Response.Listener<JSONArray> { response ->
-                for (index in 0 until response.length()) {
-                    val elements: JSONArray = response[index] as JSONArray
-                    val brand = "${elements[1] as String} (${elements[0] as String})"
-                    spinnerItems1.add(brand)
-                }
-                spinnerAdapter1.notifyDataSetChanged()
-            },
-            Response.ErrorListener {
-                Log.e("Network", it.message)
-            })
-
-        val spinnerItems2: MutableList<String> = mutableListOf("(Product)")
-        val spinnerAdapter2: ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, spinnerItems2)
-        spinnerAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner2.adapter = spinnerAdapter2
-
-        val request2 = JsonArrayRequest(
-            Request.Method.GET, "https://cs411sp20team25.web.illinois.edu/team25?action=select&table=Products", null,
-            Response.Listener<JSONArray> { response ->
-                for (index in 0 until response.length()) {
-                    val elements: JSONArray = response[index] as JSONArray
-                    val brand = "${elements[2] as String} (${elements[0] as String})"
-                    spinnerItems2.add(brand)
-                }
-                spinnerAdapter2.notifyDataSetChanged()
-            },
-            Response.ErrorListener {
-                Log.e("Network", it.message)
-            })
-
-        val requestQueue = Volley.newRequestQueue(context)
-        requestQueue.add(request1)
-        requestQueue.add(request2)
+        spinner1.adapter = SpinnerUtils.retailerSpinnerUtil(context!!)
+        spinner2.adapter = SpinnerUtils.productSpinnerUtil(context!!)
 
         insertButton.setOnClickListener {
             if (spinner1.selectedItemPosition != 0 && spinner2.selectedItemPosition != 0) {

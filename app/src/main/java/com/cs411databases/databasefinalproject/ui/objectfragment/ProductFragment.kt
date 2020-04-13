@@ -17,6 +17,7 @@ import com.android.volley.toolbox.Volley
 
 import com.cs411databases.databasefinalproject.R
 import com.cs411databases.databasefinalproject.ui.insert.InsertFragment
+import com.cs411databases.databasefinalproject.utils.SpinnerUtils
 import org.json.JSONArray
 
 class ProductFragment(private val insertFragment: InsertFragment) : Fragment() {
@@ -38,32 +39,7 @@ class ProductFragment(private val insertFragment: InsertFragment) : Fragment() {
         spinner2 = view.findViewById(R.id.spinner2)
         insertButton = view.findViewById(R.id.button)
 
-        var spinnerItems1: MutableList<String> = mutableListOf("(Brand)")
-        val spinnerAdapter1: ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, spinnerItems1)
-        spinnerAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner1.adapter = spinnerAdapter1
-
-        val request = JsonArrayRequest(
-        Request.Method.GET, "https://cs411sp20team25.web.illinois.edu/team25?action=select&table=Brands", null,
-        Response.Listener<JSONArray> { response ->
-            for (index in 0 until response.length()) {
-                val elements: JSONArray = response[index] as JSONArray
-                val brand = "${elements[1] as String} (${elements[0] as String})"
-                spinnerItems1.add(brand)
-            }
-            spinnerAdapter1.notifyDataSetChanged()
-        },
-        Response.ErrorListener {
-            Log.e("Network", it.message)
-        })
-
-        Volley.newRequestQueue(context).add(request)
-
-        val spinnerItems2: List<String> = listOf("(Type)", "Shirts", "Pants", "Jackets",
-            "Dresswear", "Shoes", "Swim", "Accessories", "Socks", "Underwear")
-        val spinnerAdapter2: ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, spinnerItems2)
-        spinnerAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner2.adapter = spinnerAdapter2
+        spinner1.adapter = SpinnerUtils.brandSpinnerUtil(context!!)
 
         insertButton.setOnClickListener {
             if (spinner1.selectedItemPosition != 0 && spinner2.selectedItemPosition != 0) {

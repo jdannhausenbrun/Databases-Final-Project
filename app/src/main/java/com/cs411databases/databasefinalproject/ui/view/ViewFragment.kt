@@ -5,13 +5,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.TextView
+import android.view.*
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +18,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.cs411databases.databasefinalproject.R
 import com.cs411databases.databasefinalproject.objects.*
-import kotlinx.android.synthetic.main.update_dialog.view.*
+import com.cs411databases.databasefinalproject.utils.SpinnerUtils
 import org.json.JSONArray
 import java.sql.Date
 
@@ -74,7 +69,32 @@ class ViewFragment : Fragment() {
             }
         }
 
+        setHasOptionsMenu(true)
+
         return root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.search_menu, menu)
+
+        val searchItem = menu.findItem(R.id.search)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (newText.isEmpty()) {
+                    Log.e("Jacob", "Empty")
+                    // TODO
+                }
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                Log.e("Jacob", query)
+                // TODO
+                return false
+            }
+        })
     }
 
     fun updateViewList(table: String) {
@@ -149,15 +169,7 @@ class ViewFragment : Fragment() {
             updateValues += "&c=${listOfItems[position].getAttributeName(3)}&v=$text3"
         }
         if (text4.isNotEmpty()) {
-            var text4Formatted = text4
-            if (listOfItems[position].getAttributeName(4) == "IsReturn") {
-                if (text4.toLowerCase() == "yes") {
-                    text4Formatted = "1"
-                } else if (text4.toLowerCase() == "no") {
-                    text4Formatted = "0"
-                }
-            }
-            updateValues += "&c=${listOfItems[position].getAttributeName(4)}&v=$text4Formatted"
+            updateValues += "&c=${listOfItems[position].getAttributeName(4)}&v=$text4"
         }
         val url = "$BASE_URL?action=update&table=$currentTableSelection$updateValues" +
                 "&wc=${listOfItems[position].idColumnName}&wv=${listOfItems[position].id}"
@@ -165,61 +177,139 @@ class ViewFragment : Fragment() {
         val stringRequest = StringRequest(Request.Method.GET, url,
             Response.Listener<String> { response ->
                 Log.d("Update Request", response)
+                Log.e("Jacob", url)
                 // Reload the list of items
                 updateViewList(currentTableSelection)
             },
-            Response.ErrorListener { error -> Log.d("Update Request", error.toString()) })
+            Response.ErrorListener { error ->
+                Log.d("Update Request", error.toString())
+                Log.e("Jacob", url)
+            })
 
         queue.add(stringRequest)
     }
 
     fun createAndHandleUpdateAlertDialog(position: Int) {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.update_dialog, null)
+        var dialogView: View? = null
+        when (currentTableSelection) {
+            "Brands" -> {
+                dialogView = LayoutInflater.from(context).inflate(R.layout.fragment_brand, null)
+                val button = dialogView.findViewById<Button>(R.id.button)
+                button.text = "Update"
+                button.setOnClickListener {
+                    updateEntry(position,
+                        dialogView?.findViewById<EditText>(R.id.editText1)?.text.toString(),
+                        "",
+                        "",
+                        "")
+                }
+            }
+            "Transactions" -> {
+                dialogView = LayoutInflater.from(context).inflate(R.layout.fragment_transaction, null)
+                val spinner1 = dialogView.findViewById<Spinner>(R.id.spinner1)
+                val spinner2 = dialogView.findViewById<Spinner>(R.id.spinner2)
+                spinner1.adapter = SpinnerUtils.productForSaleSpinnerUtil(context!!)
+                val button = dialogView.findViewById<Button>(R.id.button)
+                button.text = "Update"
+
+                button.setOnClickListener {
+                    var spinner1Text = ""
+                    if (spinner1.selectedItemPosition != 0) {
+                        spinner1Text = spinner1.selectedItem as String
+                        spinner1Text = spinner1Text.substring(spinner1Text.indexOf("(") + 1, spinner1Text.indexOf(")"))
+                    }
+
+                    var spinner2Text = ""
+                    if (spinner2.selectedItemPosition != 0) {
+                        if (spinner2.selectedItem as String == "Yes") {
+                            spinner2Text = "1"
+                        } else if (spinner2.selectedItem as String == "No") {
+                            spinner2Text = "0"
+                        }
+                    }
+
+                    updateEntry(position,
+                        spinner1Text,
+                        dialogView?.findViewById<EditText>(R.id.editText1)?.text.toString(),
+                        dialogView?.findViewById<EditText>(R.id.editText2)?.text.toString(),
+                        spinner2Text)
+                }
+            }
+            "Retailers" -> {
+                dialogView = LayoutInflater.from(context).inflate(R.layout.fragment_retailer, null)
+                val button = dialogView.findViewById<Button>(R.id.button)
+                val spinner1 = dialogView.findViewById<Spinner>(R.id.spinner1)
+                button.text = "Update"
+                button.setOnClickListener {
+                    updateEntry(position,
+                        dialogView?.findViewById<EditText>(R.id.editText1)?.text.toString(),
+                        if (spinner1.selectedItemPosition != 0) spinner1.selectedItem as String else "",
+                        "",
+                        "")
+                }
+            }
+            "Products" -> {
+                dialogView = LayoutInflater.from(context).inflate(R.layout.fragment_product, null)
+                val spinner1 = dialogView.findViewById<Spinner>(R.id.spinner1)
+                spinner1.adapter = SpinnerUtils.brandSpinnerUtil(context!!)
+                val spinner2 = dialogView.findViewById<Spinner>(R.id.spinner2)
+                val button = dialogView.findViewById<Button>(R.id.button)
+                button.text = "Update"
+
+                button.setOnClickListener {
+                    var spinner1Text = ""
+                    if (spinner1.selectedItemPosition != 0) {
+                        spinner1Text = spinner1.selectedItem as String
+                        spinner1Text = spinner1Text.substring(spinner1Text.indexOf("(") + 1, spinner1Text.indexOf(")"))
+                    }
+
+                    updateEntry(position,
+                        spinner1Text,
+                        dialogView?.findViewById<EditText>(R.id.editText1)?.text.toString(),
+                        if (spinner2.selectedItemPosition != 0) spinner2.selectedItem as String else "",
+                        "")
+                }
+            }
+            "ProductsForSale" -> {
+                dialogView = LayoutInflater.from(context).inflate(R.layout.fragment_product_for_sale, null)
+                val spinner1 = dialogView.findViewById<Spinner>(R.id.spinner1)
+                spinner1.adapter = SpinnerUtils.retailerSpinnerUtil(context!!)
+                val spinner2 = dialogView.findViewById<Spinner>(R.id.spinner2)
+                spinner2.adapter = SpinnerUtils.productSpinnerUtil(context!!)
+                val button = dialogView.findViewById<Button>(R.id.button)
+                button.text = "Update"
+
+                button.setOnClickListener {
+                    var spinner1Text = ""
+                    if (spinner1.selectedItemPosition != 0) {
+                        spinner1Text = spinner1.selectedItem as String
+                        spinner1Text = spinner1Text.substring(spinner1Text.indexOf("(") + 1, spinner1Text.indexOf(")"))
+                    }
+
+                    var spinner2Text = ""
+                    if (spinner2.selectedItemPosition != 0) {
+                        spinner2Text = spinner2.selectedItem as String
+                        spinner2Text = spinner2Text.substring(spinner2Text.indexOf("(") + 1, spinner2Text.indexOf(")"))
+                    }
+
+                    updateEntry(position,
+                        spinner1Text,
+                        spinner2Text,
+                        dialogView?.findViewById<EditText>(R.id.editText1)?.text.toString(),
+                        dialogView?.findViewById<EditText>(R.id.editText2)?.text.toString())
+                }
+            }
+        }
+
         val dialogBuilder = AlertDialog.Builder(context)
             .setCancelable(true)
             .setView(dialogView)
-            .setPositiveButton("Update", DialogInterface.OnClickListener { dialog, id ->
-                updateEntry(position, dialogView.editText1.text.toString(), dialogView.editText2.text.toString(),
-                    dialogView.editText3.text.toString(), dialogView.editText4.text.toString())
-            })
-            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
+            .setNegativeButton("Close", DialogInterface.OnClickListener { dialog, id ->
                 dialog.cancel()
             })
         val alert = dialogBuilder.create()
         alert.setTitle("Update Entry")
         alert.show()
-        when (currentTableSelection) {
-            "Brands" -> {
-                dialogView.editText1.hint = "BrandName"
-                dialogView.editText2.hint = "N/A"
-                dialogView.editText3.hint = "N/A"
-                dialogView.editText4.hint = "N/A"
-            }
-            "Transactions" -> {
-                dialogView.editText1.hint = "ProductOfferingID"
-                dialogView.editText2.hint = "TransactionDate (YYYY-MM-DD)"
-                dialogView.editText3.hint = "TransactionPrice"
-                dialogView.editText4.hint = "IsReturn (Yes/No)"
-            }
-            "Retailers" -> {
-                dialogView.editText1.hint = "RetailerName"
-                dialogView.editText2.hint = "RetailerCategory"
-                dialogView.editText3.hint = "N/A"
-                dialogView.editText4.hint = "N/A"
-            }
-            "Products" -> {
-                dialogView.editText1.hint = "BrandID"
-                dialogView.editText2.hint = "ProductName"
-                dialogView.editText3.hint = "ProductType"
-                dialogView.editText4.hint = "N/A"
-            }
-            "ProductsForSale" -> {
-                dialogView.editText1.hint = "RetailerID"
-                dialogView.editText2.hint = "ProductID"
-                dialogView.editText3.hint = "Price"
-                dialogView.editText4.hint = "DiscountPrice"
-            }
-        }
     }
 
     class ListAdapter(private val list: List<DatabaseObject>, private val context: Context, private val viewFragment: ViewFragment):

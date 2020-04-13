@@ -4,11 +4,16 @@
     <item
         android:id="@+id/navigation_insert"
         android:icon="@mipmap/add_icon"
-        android:title="Insert" />
+        android:title="C" />
 
     <item
         android:id="@+id/navigation_view"
         android:icon="@mipmap/list_icon"
-        android:title="View/Update/Delete" />
+        android:title="R/U/D" />
+
+    <item
+        android:id="@+id/navigation_recommendations"
+        android:icon="@mipmap/rec_icon"
+        android:title="Recommendations" />
 
 </menu>

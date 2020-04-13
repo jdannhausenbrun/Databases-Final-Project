@@ -8,18 +8,18 @@
     <fragment
         android:id="@+id/navigation_insert"
         android:name="com.cs411databases.databasefinalproject.ui.insert.InsertFragment"
-        android:label="@string/title_home"
+        android:label="Insert"
         tools:layout="@layout/fragment_insert" />
 
     <fragment
         android:id="@+id/navigation_view"
         android:name="com.cs411databases.databasefinalproject.ui.view.ViewFragment"
-        android:label="@string/title_dashboard"
+        android:label="View"
         tools:layout="@layout/fragment_view" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.cs411databases.databasefinalproject.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_recommendations"
+        android:name="com.cs411databases.databasefinalproject.ui.recommendations.RecommendationsFragment"
+        android:label="Recommendations"
+        tools:layout="@layout/fragment_recommendations" />
 </navigation>
