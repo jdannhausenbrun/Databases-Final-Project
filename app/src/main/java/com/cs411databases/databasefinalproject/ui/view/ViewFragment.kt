@@ -27,6 +27,7 @@ class ViewFragment : Fragment() {
     private lateinit var listAdapter: ListAdapter
     private lateinit var queue: RequestQueue
     private lateinit var spinner: Spinner
+    private lateinit var searchView: SearchView
     var currentTableSelection: String = ""
 
     private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25"
@@ -59,12 +60,13 @@ class ViewFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                searchView.setQuery("", false)
                 when (position) {
-                    0 -> updateViewList("Brands")
-                    1 -> updateViewList("Transactions")
-                    2 -> updateViewList("Retailers")
-                    3 -> updateViewList("Products")
-                    4 -> updateViewList("ProductsForSale")
+                    0 -> updateViewList("Brands", null)
+                    1 -> updateViewList("Transactions", null)
+                    2 -> updateViewList("Retailers", null)
+                    3 -> updateViewList("Products", null)
+                    4 -> updateViewList("ProductsForSale", null)
                 }
             }
         }
@@ -77,28 +79,30 @@ class ViewFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_menu, menu)
 
-        val searchItem = menu.findItem(R.id.search)
-        val searchView = searchItem.actionView as SearchView
+        searchView = menu.findItem(R.id.search).actionView as SearchView
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isEmpty()) {
-                    Log.e("Jacob", "Empty")
-                    // TODO
+                    updateViewList(currentTableSelection, null)
                 }
                 return false
             }
 
             override fun onQueryTextSubmit(query: String): Boolean {
-                Log.e("Jacob", query)
-                // TODO
+                if (query.isNotEmpty()) {
+                    updateViewList(currentTableSelection, query)
+                }
                 return false
             }
         })
     }
 
-    fun updateViewList(table: String) {
+    fun updateViewList(table: String, query: String?) {
         var url = "$BASE_URL?action=select&table=$table"
+        if (query != null) {
+            url = "$BASE_URL?action=search&table=$table&q=$query"
+        }
         currentTableSelection = table
 
         val request = JsonArrayRequest(
@@ -150,7 +154,8 @@ class ViewFragment : Fragment() {
             Response.Listener<String> { response ->
                 Log.d("Delete Request", response)
                 // Reload the list of items
-                updateViewList(currentTableSelection)
+                searchView.setQuery("", false)
+                updateViewList(currentTableSelection, null)
             },
             Response.ErrorListener { error -> Log.d("Delete Request", error.toString()) })
 
@@ -179,7 +184,8 @@ class ViewFragment : Fragment() {
                 Log.d("Update Request", response)
                 Log.e("Jacob", url)
                 // Reload the list of items
-                updateViewList(currentTableSelection)
+                searchView.setQuery("", false)
+                updateViewList(currentTableSelection, null)
             },
             Response.ErrorListener { error ->
                 Log.d("Update Request", error.toString())
