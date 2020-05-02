@@ -79,7 +79,7 @@ def recommend_sys(query):
         if 'm' not in query or 'retailer' not in query:
             return 'query missing'
         method = query['m'][0]
-        retailer = query['retailer'][0]
+        retailer = int(query['retailer'][0])
         if method == 'add':
             sql_q = f'''
                 SELECT DISTINCT * FROM
@@ -89,13 +89,13 @@ def recommend_sys(query):
                             FROM Transactions
                             NATURAL JOIN ProductsForSale
                             NATURAL JOIN Retailers
-                            WHERE (NOT RetailerName = '{retailer}') AND IsReturn = 0
+                            WHERE (NOT RetailerID = '{retailer}') AND IsReturn = 0
                             GROUP BY ProductID
                             ORDER BY COUNT(*) DESC) AS T) AS TT
                         LEFT JOIN
                         (SELECT ProductID
                         FROM ProductsForSale NATURAL JOIN Retailers
-                        WHERE RetailerName = '{retailer}') AS T0
+                        WHERE RetailerID = '{retailer}') AS T0
                         ON TT.ProductID = T0.ProductID
                         WHERE T0.ProductID IS NULL) AS TALL
                 NATURAL JOIN Products
@@ -106,13 +106,13 @@ def recommend_sys(query):
                     (SELECT DISTINCT T.ProductID FROM
                         (SELECT ProductID
                         FROM ProductsForSale NATURAL JOIN Retailers
-                        WHERE RetailerName = '{retailer}') AS T
+                        WHERE RetailerID = '{retailer}') AS T
                         LEFT JOIN
                         (SELECT ProductID
                         FROM Transactions
                         NATURAL JOIN ProductsForSale
                         NATURAL JOIN Retailers
-                        WHERE RetailerName = '{retailer}' AND IsReturn = 1) AS T2
+                        WHERE RetailerID = '{retailer}' AND IsReturn = 1) AS T2
                         ON T.ProductID = T2.ProductID
                         WHERE T2.ProductID IS NULL) AS TT
                 NATURAL JOIN Products
@@ -126,7 +126,7 @@ def recommend_sys(query):
                     AND (S2.RetailerID != S1.RetailerID)
                     AND (S1.DiscountPrice < S2.DiscountPrice) ORDER BY price_difference DESC) AS T
                 NATURAL JOIN Retailers
-                WHERE RetailerName = '{retailer}'
+                WHERE RetailerID = '{retailer}'
                 GROUP BY pid
             '''
 
