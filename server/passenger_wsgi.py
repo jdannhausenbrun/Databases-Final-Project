@@ -25,9 +25,9 @@ def get_handler(query):
     curs = conn.cursor()
 
     try:
-        table = query['table'][0]
         action = query['action'][0]
-         
+        table = query['table'][0]
+             
         if action == 'select':
             sql_q = f"SELECT * FROM {table}"
              
@@ -60,10 +60,6 @@ def get_handler(query):
             q = query['q']
             sql_q = f'SELECT * FROM {table} WHERE {search_mapping[table]} LIKE "%{q[0]}%"'
 
-        elif action == 'recommend':
-            if 'retailer' not in query:
-                return 'query missing'
-
         curs.execute(sql_q)
         response = json.dumps([[str(v) for v in r] for r in curs.fetchall()])
         conn.commit()
@@ -75,12 +71,85 @@ def get_handler(query):
     #return sql_q.encode()
 
 
+def recommend_sys(query):
+    conn = pymysql.connect(host=host, user=user, passwd=passwd, db=db)
+    curs = conn.cursor()
+
+    try:
+        if 'm' not in query or 'retailer' not in query:
+            return 'query missing'
+        method = query['m'][0]
+        retailer = int(query['retailer'][0])
+        if method == 'add':
+            sql_q = f'''
+                SELECT DISTINCT * FROM
+                    (SELECT TT.ProductID AS ProductID FROM
+                        (SELECT ProductID FROM
+                            (SELECT ProductID, COUNT(*) AS C
+                            FROM Transactions
+                            NATURAL JOIN ProductsForSale
+                            NATURAL JOIN Retailers
+                            WHERE (NOT RetailerID = '{retailer}') AND IsReturn = 0
+                            GROUP BY ProductID
+                            ORDER BY COUNT(*) DESC) AS T) AS TT
+                        LEFT JOIN
+                        (SELECT ProductID
+                        FROM ProductsForSale NATURAL JOIN Retailers
+                        WHERE RetailerID = '{retailer}') AS T0
+                        ON TT.ProductID = T0.ProductID
+                        WHERE T0.ProductID IS NULL) AS TALL
+                NATURAL JOIN Products
+            '''
+        elif method == 'remove':
+            sql_q = f'''
+                SELECT * FROM
+                    (SELECT DISTINCT T.ProductID FROM
+                        (SELECT ProductID
+                        FROM ProductsForSale NATURAL JOIN Retailers
+                        WHERE RetailerID = '{retailer}') AS T
+                        LEFT JOIN
+                        (SELECT ProductID
+                        FROM Transactions
+                        NATURAL JOIN ProductsForSale
+                        NATURAL JOIN Retailers
+                        WHERE RetailerID = '{retailer}' AND IsReturn = 1) AS T2
+                        ON T.ProductID = T2.ProductID
+                        WHERE T2.ProductID IS NULL) AS TT
+                NATURAL JOIN Products
+            '''
+        elif method == 'sale':
+            sql_q = f'''
+                SELECT P.ProductName, TT.newp FROM
+                    (SELECT pid, MIN(price) AS newp FROM
+                        (SELECT S2.ProductID AS pid, S2.RetailerID, S1.DiscountPrice AS price, S2.DiscountPrice - S1.DiscountPrice AS price_difference, S1.RetailerID AS RetialerID
+                        FROM ProductsForSale S1, ProductsForSale S2
+                        WHERE S1.ProductID = S2.ProductID
+                        AND (S1.RetailerID = '{retailer}')
+                        AND (S2.RetailerID != S1.RetailerID)
+                        AND (S1.DiscountPrice < S2.DiscountPrice) ORDER BY price_difference DESC) AS T
+                    GROUP BY pid) AS TT
+                JOIN Products AS P ON P.ProductID = TT.pid
+            '''
+
+        curs.execute(sql_q)
+        response = json.dumps([[str(v) for v in r] for r in curs.fetchall()][:10])
+        conn.commit()
+
+    except Exception as e:
+        response = f'query error {str(e)}'
+
+    conn.close()
+    return response.encode()
+
+
 def application(environ, start_response):
     body = 'Hello world!'
     if environ['QUERY_STRING']:
         query = parse_qs(environ['QUERY_STRING'])
         if 'action' in query and query['action'][0] in actions:
             body = get_handler(query)
+        elif 'action' in query and query['action'][0] == 'recommend':
+            body = recommend_sys(query)
         else:
             body = 'invalid action'
 
