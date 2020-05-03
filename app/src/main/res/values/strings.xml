@@ -32,4 +32,11 @@
         <item>Socks</item>
         <item>Underwear</item>
     </string-array>
+
+    <string-array name="rec_array">
+        <item>(Recommendation Type)</item>
+        <item>Products To Add</item>
+        <item>Products To Remove</item>
+        <item>Products To Reduce Price</item>
+    </string-array>
 </resources>
