@@ -15,7 +15,6 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 
 import com.cs411databases.databasefinalproject.R
-import com.cs411databases.databasefinalproject.objects.*
 import com.cs411databases.databasefinalproject.utils.SpinnerUtils
 import org.json.JSONArray
 
@@ -41,62 +40,59 @@ class RecommendationsFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                var retailerId = ""
-                if (spinner1.selectedItemPosition != 0) {
-                    var spinnerText = spinner1.selectedItem as String
-                    retailerId = spinnerText.substring(spinnerText.indexOf("(") + 1, spinnerText.indexOf(")"))
+                if (position != 0) {
+                    val spinnerText = spinner1.selectedItem as String
+                    val retailerId = spinnerText.substring(spinnerText.indexOf("(") + 1, spinnerText.indexOf(")"))
+                    selectedRetailer = retailerId
+                    if (spinner2.selectedItemPosition != 0) {
+                        updateListOfRecommendations(retailerId, spinner2.selectedItemPosition)
+                    }
+                } else {
+                    selectedRetailer = ""
                 }
-                selectedRetailer = retailerId
-                Log.e("Jacob5", selectedRetailer)
-                Log.e("Jacob6", retailerId)
-                updateListOfRecommendations()
             }
         }
 
-        spinner2 = view.findViewById(R.id.spinner1)
+        spinner2 = view.findViewById(R.id.spinner2)
 
         spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {}
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                updateListOfRecommendations()
+                if (position != 0 && spinner1.selectedItemPosition != 0) {
+                    updateListOfRecommendations(selectedRetailer, position)
+                }
             }
         }
 
         return view
     }
 
-    fun updateListOfRecommendations() {
-        if (spinner1.selectedItemPosition != 0 && spinner2.selectedItemPosition != 0) {
-            var queryAction = ""
-            when (spinner2.selectedItemPosition) {
-                1 -> { queryAction = "add" }
-                2 -> { queryAction = "remove" }
-                3 -> { queryAction = "sale" }
-            }
-            val url = "$BASE_URL?action=recommend&retailer=$selectedRetailer&m=$queryAction"
-            Log.e("Jacob1", url)
-
-            val request = JsonArrayRequest(
-                Request.Method.GET, url, null,
-                Response.Listener<JSONArray> { response ->
-                    Log.e("Jacob1", response.toString())
-                    var newTextViewContents = ""
-                    for (index in 0 until response.length()) {
-                        val elements: String = response[index] as String
-                        Log.e("Jacob2", elements)
-                        newTextViewContents += "${index + 1}. ${elements[1] as String}\n"
-                    }
-                    recommendationList.text = newTextViewContents
-                },
-                Response.ErrorListener {
-                    Log.e("Network", it.message)
-                })
-
-            // Add the request to the RequestQueue.
-            Volley.newRequestQueue(context).add(request)
-        } else {
-            recommendationList.text = ""
+    fun updateListOfRecommendations(retailer: String, action: Int) {
+        var queryAction = ""
+        when (action) {
+            1 -> { queryAction = "add" }
+            2 -> { queryAction = "remove" }
+            3 -> { queryAction = "sale" }
         }
+        val url = "$BASE_URL?action=recommend&retailer=$retailer&m=$queryAction"
+        Log.e("Jacob", url)
+
+        val request = JsonArrayRequest(
+            Request.Method.GET, url, null,
+            Response.Listener<JSONArray> { response ->
+                var newTextViewContents = ""
+                for (index in 0 until response.length()) {
+                    val elements: JSONArray = response[index] as JSONArray
+                    newTextViewContents += "${index + 1}. ${elements[2] as String}\n\n"
+                }
+                recommendationList.text = newTextViewContents
+            },
+            Response.ErrorListener {
+                Log.e("Network", it.message)
+            })
+
+        // Add the request to the RequestQueue.
+        Volley.newRequestQueue(context).add(request)
     }
 }
