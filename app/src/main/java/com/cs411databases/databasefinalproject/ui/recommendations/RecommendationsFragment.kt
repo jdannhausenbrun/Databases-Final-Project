@@ -17,6 +17,7 @@ import com.android.volley.toolbox.Volley
 import com.cs411databases.databasefinalproject.R
 import com.cs411databases.databasefinalproject.utils.SpinnerUtils
 import org.json.JSONArray
+import kotlin.math.round
 
 class RecommendationsFragment : Fragment() {
     private val BASE_URL = "https://cs411sp20team25.web.illinois.edu/team25"
@@ -49,6 +50,7 @@ class RecommendationsFragment : Fragment() {
                     }
                 } else {
                     selectedRetailer = ""
+                    recommendationList.text = ""
                 }
             }
         }
@@ -61,6 +63,8 @@ class RecommendationsFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (position != 0 && spinner1.selectedItemPosition != 0) {
                     updateListOfRecommendations(selectedRetailer, position)
+                } else {
+                    recommendationList.text = ""
                 }
             }
         }
@@ -82,9 +86,24 @@ class RecommendationsFragment : Fragment() {
             Request.Method.GET, url, null,
             Response.Listener<JSONArray> { response ->
                 var newTextViewContents = ""
-                for (index in 0 until response.length()) {
-                    val elements: JSONArray = response[index] as JSONArray
-                    newTextViewContents += "${index + 1}. ${elements[2] as String}\n\n"
+                if (queryAction != "sale") {
+                    for (index in 0 until response.length()) {
+                        val elements: JSONArray = response[index] as JSONArray
+                        if (index != (response.length() - 1)) {
+                            newTextViewContents += "${index + 1}. ${elements[2] as String}\n\n"
+                        } else {
+                            newTextViewContents += "${index + 1}. ${elements[2] as String}"
+                        }
+                    }
+                } else {
+                    for (index in 0 until response.length()) {
+                        val elements: JSONArray = response[index] as JSONArray
+                        if (index != (response.length() - 1)) {
+                            newTextViewContents += "${index + 1}. ${elements[0] as String} - (Consider pricing at ${round((elements[1] as String).toDouble() * 100) / 100})\n\n"
+                        } else {
+                            newTextViewContents += "${index + 1}. ${elements[0] as String} - (Consider pricing at ${round((elements[1] as String).toDouble() * 100) / 100})"
+                        }
+                    }
                 }
                 recommendationList.text = newTextViewContents
             },
