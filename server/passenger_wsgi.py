@@ -58,7 +58,18 @@ def get_handler(query):
             if 'q' not in query:
                 return 'query missing'
             q = query['q']
-            sql_q = f'SELECT * FROM {table} WHERE {search_mapping[table]} LIKE "%{q[0]}%"'
+            if table == 'ProductsForSale':
+                sql_q = f'''
+                    SELECT * FROM ProductsForSale JOIN Products
+                    WHERE ProductName LIKE "%{q[0]}%"
+                '''
+            elif table == 'Transactions':
+                sql_q = f'''
+                    SELECT * FROM Transactions JOIN Products JOIN ProductsForSale
+                    WHERE ProductName LIKE "%{q[0]}%"
+                '''
+            else:
+                sql_q = f'SELECT * FROM {table} WHERE {search_mapping[table]} LIKE "%{q[0]}%"'
 
         curs.execute(sql_q)
         response = json.dumps([[str(v) for v in r] for r in curs.fetchall()])
