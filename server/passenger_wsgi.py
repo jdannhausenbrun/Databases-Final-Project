@@ -60,14 +60,16 @@ def get_handler(query):
             q = query['q']
             if table == 'ProductsForSale':
                 sql_q = f'''
-                    SELECT * FROM ProductsForSale
+                    SELECT Pfs.ProductOfferingID, Pfs.RetailerID, Pfs.ProductID, Pfs.Price, Pfs.DiscountPrice
+                    FROM ProductsForSale AS Pfs
                     NATURAL JOIN Products
                     WHERE ProductName LIKE "%{q[0]}%"
                 '''
             elif table == 'Transactions':
                 sql_q = f'''
-                    SELECT * FROM Transactions
-                    NATURAL JOIN Products JOIN ProductsForSale
+                    SELECT T.TransactionID, T.ProductOfferingID, T.TransactionDate, T.TransactionPrice, T.IsReturn
+                    FROM Transactions AS T
+                    NATURAL JOIN ProductsForSale NATURAL JOIN Products
                     WHERE ProductName LIKE "%{q[0]}%"
                 '''
             else:
